@@ -89,6 +89,7 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
                                 + " Falling back to fenix username");
                         username = person.getUsername();
                     } else {
+                        LdapIntegration.removePassword(username);
                         final String finalUsername = username;
                         FenixFramework.getTransactionManager().withTransaction(new CallableWithoutException<Object>() {
 
