@@ -61,6 +61,12 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
             AuthorizationException {
 
         Authenticate.logout(request.getSession());
+        if (requestURL.startsWith("http:")) {
+            logger.info("Rewriting request URL");
+            logger.info("Step 1: " + requestURL);
+            requestURL = requestURL.replace("http:", "https:");
+            logger.info("Step 2: " + requestURL);
+        }
         Assertion validate = validator.validate(ticket, requestURL);
         String username = validate.getPrincipal().getName();
         User user = User.findByUsername(username);
