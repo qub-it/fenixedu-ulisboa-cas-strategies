@@ -63,10 +63,10 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
         Authenticate.logout(request.getSession());
         requestURL = requestURL.replace("http:", "https:");
         Assertion validate = validator.validate(ticket, requestURL);
-        String username = validate.getPrincipal().getName();
+        String username = validate.getPrincipal().getName().trim();
         User user = User.findByUsername(username);
 
-        if (user == null) {
+        if (user == null && !username.startsWith("bennu")) {
             String documentNumber = (String) validate.getPrincipal().getAttributes().get("ULBI");
             Collection<Person> people = Person.findPersonByDocumentID(documentNumber);
             if (people.size() > 1) {
