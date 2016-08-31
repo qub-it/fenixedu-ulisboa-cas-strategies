@@ -97,6 +97,11 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
                             @Override
                             public Object call() {
                                 UsernameHack.changeUsername(person.getUsername(), finalUsername);
+                                // In FCUL the username is the institucional email. So we can now
+                                // create the institutional email for the user.
+                                //
+                                // 31 August 2016 - Paulo Abrantes
+                                person.setInstitutionalEmailAddressValue(finalUsername);
                                 return null;
                             }
                         });
