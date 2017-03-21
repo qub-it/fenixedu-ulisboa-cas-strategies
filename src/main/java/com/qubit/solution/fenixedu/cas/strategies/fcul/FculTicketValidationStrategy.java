@@ -44,10 +44,10 @@ import org.jasig.cas.client.validation.TicketValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qubit.solution.fenixedu.integration.ldap.service.LdapIntegration;
+
 import pt.ist.fenixframework.CallableWithoutException;
 import pt.ist.fenixframework.FenixFramework;
-
-import com.qubit.solution.fenixedu.integration.ldap.service.LdapIntegration;
 
 public class FculTicketValidationStrategy implements TicketValidationStrategy {
 
@@ -57,13 +57,13 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
             new Cas20ServiceTicketValidator(CoreConfiguration.getConfiguration().casServerUrl());
 
     @Override
-    public void validateTicket(String ticket, String requestURL, HttpServletRequest request) throws TicketValidationException,
-            AuthorizationException {
+    public void validateTicket(String ticket, String requestURL, HttpServletRequest request)
+            throws TicketValidationException, AuthorizationException {
 
         Authenticate.logout(request.getSession());
         requestURL = requestURL.replace("http:", "https:");
         Assertion validate = validator.validate(ticket, requestURL);
-        String username = validate.getPrincipal().getName().trim();
+        String username = validate.getPrincipal().getName().trim().toLowerCase();
         User user = User.findByUsername(username);
 
         if (user == null && !username.startsWith("bennu")) {
