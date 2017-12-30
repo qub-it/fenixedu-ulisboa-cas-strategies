@@ -6,38 +6,63 @@
 	<parent>
 		<groupId>com.qubit.solution.fenixedu</groupId>
 		<artifactId>versioned-fenix-framework-project</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.0-NEW-DEV</version>
 		<relativePath />
 	</parent>
 
 	<groupId>com.qubit.solution.fenixedu</groupId>
 	<artifactId>fenixedu-ulisboa-cas-strategies</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.0-NEW-DEV</version>
 	<packaging>jar</packaging>
 
 	<name>FenixEdu ULisboa Cas strategies</name>
 
 	<properties>
-		<version.org.fenixedu.bennu>3.4.1</version.org.fenixedu.bennu>
-		<version.org.fenixedu.bennu.spring>1.2.0</version.org.fenixedu.bennu.spring>
-		<version.org.fenixedu.academic>5.2.0-SNAPSHOT</version.org.fenixedu.academic>
+		<version.org.fenixedu.bennu>6.0.0-NEW-DEV</version.org.fenixedu.bennu>
+		<version.org.fenixedu.academic>9.0.0-NEW-DEV</version.org.fenixedu.academic>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.fenixedu</groupId>
-			<artifactId>bennu-core</artifactId>
-			<version>${version.org.fenixedu.bennu}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>bennu-core</artifactId>
+            <version>${version.org.fenixedu.bennu}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>bennu-scheduler</artifactId>
+            <version>${version.org.fenixedu.bennu}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>bennu-portal</artifactId>
+            <version>${version.org.fenixedu.bennu}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>bennu-io</artifactId>
+            <version>${version.org.fenixedu.bennu}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>bennu-spring</artifactId>
+            <version>${version.org.fenixedu.bennu}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>bennu-cas-client</artifactId>
+            <version>${version.org.fenixedu.bennu}</version>
+        </dependency>
+
 		<dependency>
 			<groupId>org.fenixedu.ulisboa</groupId>
 			<artifactId>fenixedu-ulisboa-specifications</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.0-NEW-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qubit.solution.fenixedu</groupId>
 			<artifactId>fenixedu-ulisboa-ldapIntegration</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.0-NEW-DEV</version>
 		</dependency>
 	</dependencies>
 
