@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.qubit.solution.fenixedu</groupId>
 		<artifactId>versioned-fenix-framework-project</artifactId>
-		<version>1.0.0-NEW-DEV</version>
+		<version>1.0.1-NEW-DEV</version>
 		<relativePath />
 	</parent>
 
@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>org.fenixedu.ulisboa</groupId>
 			<artifactId>fenixedu-ulisboa-specifications</artifactId>
-			<version>1.0.0-NEW-DEV</version>
+			<version>1.4.0-NEW-DEV</version>
 		</dependency>
 		<dependency>
 			<groupId>com.qubit.solution.fenixedu</groupId>
