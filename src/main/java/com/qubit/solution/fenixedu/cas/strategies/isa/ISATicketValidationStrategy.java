@@ -26,10 +26,14 @@
  */
 package com.qubit.solution.fenixedu.cas.strategies.isa;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.domain.organizationalStructure.Party;
 import org.fenixedu.bennu.cas.client.CASClientConfiguration;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.UsernameHack;
@@ -43,7 +47,6 @@ import org.jasig.cas.client.validation.TicketValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qubit.solution.fenixedu.cas.strategies.fcul.FculTicketValidationStrategy;
 import com.qubit.solution.fenixedu.integration.ldap.service.LdapIntegration;
 
 import pt.ist.fenixframework.CallableWithoutException;
@@ -51,8 +54,26 @@ import pt.ist.fenixframework.FenixFramework;
 
 public class ISATicketValidationStrategy implements TicketValidationStrategy {
 
-    private static final Logger logger = LoggerFactory.getLogger(FculTicketValidationStrategy.class);
+    private static final Logger logger = LoggerFactory.getLogger(ISATicketValidationStrategy.class);
 
+    private static final Map<String, String> institutionalEmailMapper = new HashMap<String, String>();
+
+    static {
+        FenixFramework.getTransactionManager().withTransaction(new CallableWithoutException() {
+
+            @Override
+            public Object call() {
+                for (Person person : Party.getPartysSet(Person.class)) {
+                    String institutionalEmailAddressValue = person.getInstitutionalEmailAddressValue();
+                    if (institutionalEmailAddressValue != null && institutionalEmailAddressValue.length() > 0) {
+                        institutionalEmailMapper.put(institutionalEmailAddressValue, person.getUsername());
+                    }
+                }
+                return null;
+            }
+        });
+
+    }
     private final TicketValidator validator =
             new Cas30ServiceTicketValidator(CASClientConfiguration.getConfiguration().casServerUrl());
 
@@ -67,13 +88,23 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
         User user = User.findByUsername(username);
 
         if (user == null) {
-            String previousUsername = (String) validate.getPrincipal().getAttributes().get("previousUsername");
-            final String institutionalMail = (String) validate.getPrincipal().getAttributes().get("mail");
-            Person person = Person.findByUsername(previousUsername);
+            Map<String, Object> attributes = validate.getPrincipal().getAttributes();
+            String previousUsername = (String) attributes.get("previousUsername");
+            final String institutionalMail = (String) attributes.get("mail");
+            Person person = previousUsername != null ? Person.findByUsername(previousUsername) : null;
+
+            // If the previous username was empty we'll try to find the lookup 
+            // via email 
+            //
+            // 31 August 2018 - Paulo Abrantes
+            if (person == null && previousUsername == null) {
+                person = findByEmail(institutionalMail);
+            }
 
             if (person == null) {
-                logger.error("Received valid username: " + username
-                        + " from CAS. User was not found look up by previous username: " + previousUsername);
+                logger.error(
+                        "Received valid username: " + username + " from CAS. User was not found look up by previous username: "
+                                + previousUsername + " and email: " + institutionalMail);
                 throw AuthorizationException.authenticationFailed();
             } else {
                 if (!LdapIntegration.changeCN(person, username)) {
@@ -83,13 +114,14 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
                 } else {
                     LdapIntegration.removePassword(username);
                     final String finalUsername = username;
+                    final Person finalPerson = person;
                     FenixFramework.getTransactionManager().withTransaction(new CallableWithoutException<Object>() {
 
                         @Override
                         public Object call() {
-                            UsernameHack.changeUsername(person.getUsername(), finalUsername);
+                            UsernameHack.changeUsername(finalPerson.getUsername(), finalUsername);
                             if (institutionalMail != null && institutionalMail.length() > 0) {
-                                person.setInstitutionalEmailAddressValue(institutionalMail);
+                                finalPerson.setInstitutionalEmailAddressValue(institutionalMail);
                             }
                             return null;
                         }
@@ -98,5 +130,11 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
             }
         }
         Authenticate.login(request, response, User.findByUsername(username), "TODO: CHANGE ME");
+
+    }
+
+    private Person findByEmail(String institutionalMail) {
+        String username = institutionalEmailMapper.get(institutionalMail);
+        return (username != null) ? Person.findByUsername(username) : null;
     }
 }
