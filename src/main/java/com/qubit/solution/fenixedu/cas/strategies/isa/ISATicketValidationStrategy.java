@@ -26,7 +26,6 @@
  */
 package com.qubit.solution.fenixedu.cas.strategies.isa;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,24 +55,6 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
 
     private static final Logger logger = LoggerFactory.getLogger(ISATicketValidationStrategy.class);
 
-    private static final Map<String, String> institutionalEmailMapper = new HashMap<String, String>();
-
-    static {
-        FenixFramework.getTransactionManager().withTransaction(new CallableWithoutException() {
-
-            @Override
-            public Object call() {
-                for (Person person : Party.getPartysSet(Person.class)) {
-                    String institutionalEmailAddressValue = person.getInstitutionalEmailAddressValue();
-                    if (institutionalEmailAddressValue != null && institutionalEmailAddressValue.length() > 0) {
-                        institutionalEmailMapper.put(institutionalEmailAddressValue, person.getUsername());
-                    }
-                }
-                return null;
-            }
-        });
-
-    }
     private final TicketValidator validator =
             new Cas30ServiceTicketValidator(CASClientConfiguration.getConfiguration().casServerUrl());
 
@@ -134,7 +115,13 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
     }
 
     private Person findByEmail(String institutionalMail) {
-        String username = institutionalEmailMapper.get(institutionalMail);
-        return (username != null) ? Person.findByUsername(username) : null;
+        for (Person person : Party.getPartysSet(Person.class)) {
+            String institutionalEmailAddressValue = person.getInstitutionalEmailAddressValue();
+            if (institutionalEmailAddressValue != null && institutionalEmailAddressValue.length() > 0
+                    && institutionalEmailAddressValue.equals(institutionalMail)) {
+                return person;
+            }
+        }
+        return null;
     }
 }
