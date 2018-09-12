@@ -88,12 +88,11 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
                                 + previousUsername + " and email: " + institutionalMail);
                 throw AuthorizationException.authenticationFailed();
             } else {
-                if (!LdapIntegration.changeCN(person, username)) {
+                if (!LdapIntegration.changeULFenixUser(person, username)) {
                     logger.error("Unable to align: " + person.getUsername() + " to CN provided by CAS: " + username
                             + " Falling back to fenix username");
                     username = person.getUsername();
                 } else {
-                    LdapIntegration.removePassword(username);
                     final String finalUsername = username;
                     final Person finalPerson = person;
                     FenixFramework.getTransactionManager().withTransaction(new CallableWithoutException<Object>() {
