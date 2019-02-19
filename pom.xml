@@ -69,5 +69,16 @@
 			<url>https://repo.fenixedu.org/fenixedu-maven-repository</url>
 		</repository>
 	</repositories>
+	    <distributionManagement>
+                <repository>
+                        <id>ulisboa-repo</id>
+                        <url>https://nexjen.ulisboa.pt/nexus/content/repositories/releases/</url>
+                </repository>
+                <snapshotRepository>
+                        <id>ulisboa-repo</id>
+                        <url>https://nexjen.ulisboa.pt/nexus/content/repositories/snapshots/</url>
+                </snapshotRepository>
+        </distributionManagement>
+
 
 </project>
