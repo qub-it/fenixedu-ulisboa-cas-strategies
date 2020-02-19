@@ -1,2 +1,4 @@
+- Improvement: added degree code to ISCSP CAS ticket validation strategy
+
 2.2.0 (18-02-2020)
 - New Feature: added ISCSP CAS ticket validation strategy

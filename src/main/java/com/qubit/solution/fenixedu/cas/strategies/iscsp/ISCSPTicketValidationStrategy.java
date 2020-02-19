@@ -31,6 +31,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.cas.client.CASClientConfiguration;
 import org.fenixedu.bennu.cas.client.strategy.TicketValidationStrategy;
@@ -57,42 +59,45 @@ public class ISCSPTicketValidationStrategy implements TicketValidationStrategy {
             new Cas30ServiceTicketValidator(CASClientConfiguration.getConfiguration().casServerUrl());
 
     @Override
-    public void validateTicket(final String ticket, String requestURL, final HttpServletRequest request,
+    public void validateTicket(final String ticket, final String requestURL, final HttpServletRequest request,
             final HttpServletResponse response) throws TicketValidationException, AuthorizationException {
 
         Authenticate.logout(request, response);
-        requestURL = requestURL.replace("http:", "https:");
-        Assertion validate = validator.validate(ticket, requestURL);
-        String username = validate.getPrincipal().getName().trim().toLowerCase();
-        User user = User.findByUsername(username);
 
-        if (user == null) {
-            Map<String, Object> attributes = validate.getPrincipal().getAttributes();
-            String previousUsername = (String) attributes.get("previousUsername");
-            Person person = previousUsername != null ? Person.findByUsername(previousUsername) : null;
+        final String validationURL = requestURL.replace("http:", "https:");
+        final Assertion validate = validator.validate(ticket, validationURL);
+        final String principal = validate.getPrincipal().getName().trim().toLowerCase();
+        final Map<String, Object> attributes = validate.getPrincipal().getAttributes();
+        final String previousUsername = (String) attributes.get("previousUsername");
+        final String degreeCode = (String) attributes.get("degreeCode");
 
-            if (person == null) {
-                logger.error("Received valid username: " + username
-                        + " from CAS. User was not found look up by previous username: " + previousUsername);
-                throw AuthorizationException.authenticationFailed();
-            } else {
-                if (!LdapIntegration.changeULFenixUser(person, username)) {
-                    logger.error("Unable to align: " + person.getUsername() + " to CN provided by CAS: " + username
-                            + " Falling back to fenix username");
-                    username = person.getUsername();
-                } else {
-                    final String finalUsername = username;
-                    final Person finalPerson = person;
-
-                    FenixFramework.getTransactionManager().withTransaction(() -> {
-                        UsernameHack.changeUsername(finalPerson.getUsername(), finalUsername);
-                        return null;
-                    });
-
-                }
-            }
+        final String username =
+                NumberUtils.isNumber(principal) && StringUtils.isNotBlank(degreeCode) ? degreeCode + "." + principal : principal;
+        final User user = User.findByUsername(username);
+        if (user != null) {
+            Authenticate.login(request, response, user, "TODO: CHANGE ME");
+            return;
         }
-        Authenticate.login(request, response, User.findByUsername(username), "TODO: CHANGE ME");
+
+        final Person person = StringUtils.isNotBlank(previousUsername) ? Person.findByUsername(previousUsername) : null;
+        if (person == null) {
+            logger.error("Received valid username: " + username + " from CAS. User was not found look up by previous username: "
+                    + previousUsername);
+            throw AuthorizationException.authenticationFailed();
+        }
+
+        final boolean changedUserInLdap = LdapIntegration.changeULFenixUser(person, username);
+        if (changedUserInLdap) {
+            FenixFramework.getTransactionManager().withTransaction(() -> {
+                UsernameHack.changeUsername(person.getUsername(), username);
+                return null;
+            });
+        } else {
+            logger.error("Unable to align: " + person.getUsername() + " to CN provided by CAS: " + username
+                    + " Falling back to fenix username");
+        }
+
+        Authenticate.login(request, response, person.getUser(), "TODO: CHANGE ME");
 
     }
 }
