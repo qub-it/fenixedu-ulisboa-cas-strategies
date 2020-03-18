@@ -1,3 +1,5 @@
+- New feature: Support for Java 11
+
 2.2.1 (19-02-2020)
 - Improvement: added degree code to ISCSP CAS ticket validation strategy
 
