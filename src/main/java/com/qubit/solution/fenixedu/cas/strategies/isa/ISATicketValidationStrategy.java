@@ -114,7 +114,7 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
     }
 
     private Person findByEmail(String institutionalMail) {
-        for (Person person : Party.getPartysSet(Person.class)) {
+        for (Person person : Party.readAllPersons()) {
             String institutionalEmailAddressValue = person.getInstitutionalEmailAddressValue();
             if (institutionalEmailAddressValue != null && institutionalEmailAddressValue.length() > 0
                     && institutionalEmailAddressValue.equals(institutionalMail)) {
