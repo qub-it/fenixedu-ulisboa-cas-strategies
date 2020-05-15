@@ -1,3 +1,4 @@
+2.2.3 (15-05-2020)
 - Refactor: Removed usernameHack because User has a changeUsername
 
 2.2.2 (04-04-2020)
