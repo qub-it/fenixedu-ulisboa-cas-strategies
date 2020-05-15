@@ -37,7 +37,6 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.cas.client.CASClientConfiguration;
 import org.fenixedu.bennu.cas.client.strategy.TicketValidationStrategy;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.domain.UsernameHack;
 import org.fenixedu.bennu.core.domain.exceptions.AuthorizationException;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.jasig.cas.client.validation.Assertion;
@@ -89,7 +88,10 @@ public class ISCSPTicketValidationStrategy implements TicketValidationStrategy {
         final boolean changedUserInLdap = LdapIntegration.changeULFenixUser(person, username);
         if (changedUserInLdap) {
             FenixFramework.getTransactionManager().withTransaction(() -> {
-                UsernameHack.changeUsername(person.getUsername(), username);
+                User findByUsername = User.findByUsername(person.getUsername());
+                if(findByUsername!=null) {
+                    findByUsername.changeUsername(username);
+                }
                 return null;
             });
         } else {

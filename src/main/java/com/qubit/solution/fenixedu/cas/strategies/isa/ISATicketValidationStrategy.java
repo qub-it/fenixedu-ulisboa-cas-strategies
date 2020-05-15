@@ -36,7 +36,6 @@ import org.fenixedu.academic.domain.organizationalStructure.Party;
 import org.fenixedu.bennu.cas.client.CASClientConfiguration;
 import org.fenixedu.bennu.cas.client.strategy.TicketValidationStrategy;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.domain.UsernameHack;
 import org.fenixedu.bennu.core.domain.exceptions.AuthorizationException;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.jasig.cas.client.validation.Assertion;
@@ -99,7 +98,12 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
 
                         @Override
                         public Object call() {
-                            UsernameHack.changeUsername(finalPerson.getUsername(), finalUsername);
+                            
+                            User findByUsername = User.findByUsername(finalPerson.getUsername());
+                            if(findByUsername!=null) {
+                                findByUsername.changeUsername(finalUsername);
+                            }
+                            
                             if (institutionalMail != null && institutionalMail.length() > 0) {
                                 finalPerson.setInstitutionalEmailAddressValue(institutionalMail);
                             }

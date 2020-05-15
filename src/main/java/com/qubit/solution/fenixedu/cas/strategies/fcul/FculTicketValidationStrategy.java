@@ -36,7 +36,6 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.cas.client.CASClientConfiguration;
 import org.fenixedu.bennu.cas.client.strategy.TicketValidationStrategy;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.domain.UsernameHack;
 import org.fenixedu.bennu.core.domain.exceptions.AuthorizationException;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.jasig.cas.client.validation.Assertion;
@@ -101,7 +100,10 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
 
                             @Override
                             public Object call() {
-                                UsernameHack.changeUsername(person.getUsername(), finalUsername);
+                                User findByUsername = User.findByUsername(person.getUsername());
+                                if(findByUsername!=null) {
+                                    findByUsername.changeUsername(finalUsername);
+                                }
                                 // In FCUL the username is the institucional email. So we can now
                                 // create the institutional email for the user.
                                 //
