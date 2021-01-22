@@ -1,3 +1,5 @@
+- New feature: Add iseg cas ticket validation strategy
+
 2.2.3 (15-05-2020)
 - Refactor: Removed usernameHack because User has a changeUsername
 
