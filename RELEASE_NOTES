@@ -1,3 +1,5 @@
+- Refactor: Pass strategy to iseg customers
+
 2.2.4 (22-01-2021)
 - New feature: Add iseg cas ticket validation strategy
 
