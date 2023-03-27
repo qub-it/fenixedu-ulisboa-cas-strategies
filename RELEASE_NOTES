@@ -1,3 +1,5 @@
+- Improvement: Changed how email is obtained in FCUL for new users
+
 2.2.5 (27-01-2021)
 - Refactor: Pass strategy to iseg customers
 

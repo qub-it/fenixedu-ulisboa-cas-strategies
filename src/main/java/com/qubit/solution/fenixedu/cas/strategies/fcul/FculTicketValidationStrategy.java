@@ -32,6 +32,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.bennu.cas.client.CASClientConfiguration;
 import org.fenixedu.bennu.cas.client.strategy.TicketValidationStrategy;
@@ -101,14 +102,17 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
                             @Override
                             public Object call() {
                                 User findByUsername = User.findByUsername(person.getUsername());
-                                if(findByUsername!=null) {
+                                if (findByUsername != null) {
                                     findByUsername.changeUsername(finalUsername);
                                 }
-                                // In FCUL the username is the institucional email. So we can now
-                                // create the institutional email for the user.
-                                //
-                                // 31 August 2016 - Paulo Abrantes
-                                person.setInstitutionalEmailAddressValue(finalUsername);
+                                String email = (String) validate.getPrincipal().getAttributes().get("mail");
+                                if (!StringUtils.isEmpty(email)) {
+                                    person.setInstitutionalEmailAddressValue(email);
+                                } else {
+                                    logger.warn("Did not receive any 'mail' atribute for CAS user " + finalUsername
+                                            + ". Setting institutional email same as username");
+                                    person.setInstitutionalEmailAddressValue(finalUsername);
+                                }
                                 return null;
                             }
                         });
