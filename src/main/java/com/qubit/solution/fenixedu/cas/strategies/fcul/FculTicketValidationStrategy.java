@@ -103,7 +103,7 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
                             public Object call() {
                                 User findByUsername = User.findByUsername(person.getUsername());
                                 if (findByUsername != null) {
-                                    findByUsername.changeUsername(finalUsername);
+                                    findByUsername.align(finalUsername);
                                 }
                                 String email = (String) validate.getPrincipal().getAttributes().get("mail");
                                 if (!StringUtils.isEmpty(email)) {

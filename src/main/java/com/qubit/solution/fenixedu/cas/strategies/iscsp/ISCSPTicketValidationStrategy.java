@@ -89,8 +89,8 @@ public class ISCSPTicketValidationStrategy implements TicketValidationStrategy {
         if (changedUserInLdap) {
             FenixFramework.getTransactionManager().withTransaction(() -> {
                 User findByUsername = User.findByUsername(person.getUsername());
-                if(findByUsername!=null) {
-                    findByUsername.changeUsername(username);
+                if (findByUsername != null) {
+                    findByUsername.align(username);
                 }
                 return null;
             });

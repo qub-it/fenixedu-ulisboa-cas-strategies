@@ -98,12 +98,12 @@ public class ISATicketValidationStrategy implements TicketValidationStrategy {
 
                         @Override
                         public Object call() {
-                            
+
                             User findByUsername = User.findByUsername(finalPerson.getUsername());
-                            if(findByUsername!=null) {
-                                findByUsername.changeUsername(finalUsername);
+                            if (findByUsername != null) {
+                                findByUsername.align(finalUsername);
                             }
-                            
+
                             if (institutionalMail != null && institutionalMail.length() > 0) {
                                 finalPerson.setInstitutionalEmailAddressValue(institutionalMail);
                             }
