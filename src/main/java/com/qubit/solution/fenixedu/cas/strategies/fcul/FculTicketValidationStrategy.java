@@ -28,6 +28,7 @@ package com.qubit.solution.fenixedu.cas.strategies.fcul;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,7 +74,7 @@ public class FculTicketValidationStrategy implements TicketValidationStrategy {
             // Creating a Set since Person.findPersonByDocumentID implementation does not  
             // guarantee that it doesn't contain duplicates
             Set<Person> people = new HashSet<Person>();
-            people.addAll(Person.findPersonByDocumentID(documentNumber));
+            people.addAll(Person.findByDocumentIdentification(documentNumber).collect(Collectors.toSet()));
             if (people.size() > 1) {
                 logger.error("Received valid username: " + username + " from CAS. User was not found look up by documentNumber: "
                         + documentNumber + " returned a list with size " + people.size());
