@@ -1,3 +1,4 @@
+- Refactor: Migrate from javaee to jakarta [#qubIT-Omnis-10960]
 2.4.1 (13-03-2026)
 - Refactor: Replace IDDocumentType references with IdentificationDocumentType [#qubIT-Fenix-6491]
 
